@@ -6,11 +6,11 @@ This is the frontend application for the Windows Explorer project. Built with Nu
 
 ## Technologies
 
-  * **Framework:** [Nuxt 3](https://nuxt.com/)
-  * **UI Library:** [Tailwind CSS](https://tailwindcss.com/)
-  * **Language:** [TypeScript](https://www.typescriptlang.org/)
-  * **Testing:** [Cypress](https://www.cypress.io/)
-  * **Runtime:** [Bun](https://bun.sh/)
+- **Framework:** [Nuxt 3](https://nuxt.com/)
+- **UI Library:** [Tailwind CSS](https://tailwindcss.com/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Testing:** [Cypress](https://www.cypress.io/)
+- **Runtime:** [Bun](https://bun.sh/)
 
 ## Project Structure
 
@@ -34,8 +34,8 @@ This is the frontend application for the Windows Explorer project. Built with Nu
 
 ### Prerequisites
 
-  * [Bun](https://bun.sh/) runtime installed.
-  * The backend API must be running.
+- [Bun](https://bun.sh/) runtime installed.
+- The backend API must be running.
 
 ### 1\. Install Dependencies
 
@@ -60,8 +60,8 @@ The frontend application will be available at `http://localhost:3000`.
 
 ### Two-Panel Layout
 
-  * **Left Panel:** Displays the full folder hierarchy. The folders can be expanded and collapsed.
-  * **Right Panel:** Displays the direct subfolders and files of the folder selected in the left panel.
+- **Left Panel:** Displays the full folder hierarchy. The folders can be expanded and collapsed.
+- **Right Panel:** Displays the direct subfolders and files of the folder selected in the left panel.
 
 ### Folder Tree from Scratch
 

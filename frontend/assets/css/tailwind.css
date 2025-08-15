@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+/* Base tweaks */
+html,
+body,
+#__nuxt {
+  height: 100%;
+}
+body {
+  color: rgb(31, 41, 55);
+  background-color: rgb(243, 244, 246);
+}
