@@ -1,6 +1,4 @@
 -- Create a table to store both folders and files
--- We use a single table with a 'type' column to differentiate between them.
--- This approach is flexible and efficient for hierarchical data.
 CREATE TABLE items (
     id UUID PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -25,14 +23,13 @@ BEFORE UPDATE ON items
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
--- Sample data for a hierarchical folder and file structure
--- I'm using placeholder UUIDs for clarity. In a real app, you would generate these.
+-- Corrected sample data with valid UUIDs
 
 -- Insert root folders (parent_id is NULL)
 INSERT INTO items (id, name, parent_id, type) VALUES
 ('b0f4d3c1-e7a9-4b67-a0d3-3c9f2b1d5a67', 'Documents', NULL, 'folder'),
 ('a1b2c3d4-e5f6-7890-1234-567890abcdef', 'Pictures', NULL, 'folder'),
-('c1d2e3f4-g5h6-i7j8-k9l0-m1n2o3p4q5r6', 'Desktop', NULL, 'folder');
+('c1d2e3f4-e5f6-789a-b0c1-d2e3f4a5b6c7', 'Desktop', NULL, 'folder'); -- This UUID has been corrected
 
 -- Insert subfolders and files into Documents
 INSERT INTO items (id, name, parent_id, type) VALUES
