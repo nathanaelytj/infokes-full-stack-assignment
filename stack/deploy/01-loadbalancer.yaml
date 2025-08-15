@@ -1,0 +1,22 @@
+services:
+  loadbalancer:
+    image: traefik:3
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 100M
+    environment:
+      - TZ=Asia/Jakarta
+    networks:
+      - base-net
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/traefik:/etc/traefik:ro
+
+networks:
+  base-net:
+    external: true
+    name: base-net

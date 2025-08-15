@@ -1,0 +1,10 @@
+http:
+  middlewares:
+    secure_headers:
+      headers:
+        CustomFrameOptionsValue: "SAMEORIGIN"
+        browserxssfilter: "true"
+        ContentTypeNosniff: "true"
+        ReferrerPolicy: "strict-origin-when-cross-origin"
+        FeaturePolicy: "geolocation 'self'; midi 'self'; sync-xhr 'self'; microphone 'self'; camera 'self'; magnetometer 'self'; gyroscope 'self'; fullscreen 'self'; payment 'self'"
+        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: http: https: ws: wss:"

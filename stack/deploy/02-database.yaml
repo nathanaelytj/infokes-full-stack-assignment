@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    command:
+      [
+        "postgres",
+        "-c",
+        "shared_preload_libraries=pg_stat_statements",
+        "-c",
+        "pg_stat_statements.track=all",
+        "-c",
+        "pg_stat_statements.max=10000",
+      ]
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+    ports:
+      - "5432:5432"
+    networks:
+      base-net:
+        aliases:
+          - postgres
+    hostname: postgres
+    environment:
+      - TZ=Asia/Jakarta
+      - POSTGRES_PASSWORD=examplePgPassword
+    volumes:
+      - ../volumes/postgres:/var/lib/postgresql/data
+
+networks:
+  base-net:
+    external: true
+    name: base-net

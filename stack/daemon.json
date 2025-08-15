@@ -1,0 +1,30 @@
+{
+    "userland-proxy": false,
+    "ipv6": true,
+    "ip6tables": true,
+    "fixed-cidr-v6": "fd00:1::/64",
+    "default-network-opts": {"bridge":{"com.docker.network.enable_ipv6":"true"}},
+    "bip": "10.170.0.1/24",
+    "fixed-cidr": "10.170.0.0/24",
+    "builder": {
+        "gc": {
+            "defaultKeepStorage": "5GB",
+            "enabled": true
+        }
+    },
+    "debug": false,
+    "experimental": false,
+    "features": {
+        "buildkit": true
+    },
+    "insecure-registries": [
+        "127.0.0.0/8",
+        "192.168.0.0/16",
+        "172.16.0.0/12",
+        "10.0.0.0/8"
+    ],
+    "registry-mirrors": ["https://mirror.gcr.io"],
+    "log-opts": {"max-size": "20m", "max-file": "3"},
+    "live-restore": false,
+    "dns": ["1.1.1.1", "1.0.0.1"]
+}
