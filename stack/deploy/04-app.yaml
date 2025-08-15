@@ -4,7 +4,7 @@ services:
     working_dir: /app
     command:
       [
-        "bun","dev","--host 0.0.0.0"
+        "bun","dev","--host","0.0.0.0"
       ]
     deploy:
       replicas: 1
@@ -31,7 +31,7 @@ services:
     working_dir: /app
     command:
       [
-        "bun","dev","--host 0.0.0.0"
+        "bun","dev","--host","0.0.0.0"
       ]
     deploy:
       replicas: 1
