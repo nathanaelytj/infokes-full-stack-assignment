@@ -1,0 +1,34 @@
+services:
+  redis:
+    image: valkey/valkey:alpine
+    command:
+      [
+        "redis-server",
+        "--loglevel",
+        "warning",
+        "--stop-writes-on-bgsave-error",
+        "no",
+        "--maxmemory",
+        "412mb",
+        "--maxmemory-policy",
+        "allkeys-lru",
+      ]
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+    environment:
+      - TZ=Asia/Jakarta
+    networks:
+      base-net:
+        aliases:
+          - redis
+    volumes:
+      - ../volumes/redis:/data
+
+networks:
+  base-net:
+    external: true
+    name: base-net
