@@ -55,6 +55,35 @@ export function apiV1() {
     },
   );
 
+  app.get(
+    "/items/search",
+    async ({ query, set }) => {
+      const limit = Math.min(Math.max(Number(query.limit ?? 20), 1), 100);
+      const q = String(query.q ?? "").trim();
+      if (!q) {
+        set.status = 400;
+        return { message: "q is required" };
+      }
+      const res = await svc.search({
+        q,
+        parentId: query.parentId ?? undefined,
+        type: query.type ?? undefined,
+        limit,
+        cursor: query.cursor ?? undefined,
+      });
+      return { data: res.items, nextCursor: res.nextCursor };
+    },
+    {
+      query: t.Object({
+        q: t.String(),
+        limit: t.Optional(t.String()),
+        cursor: t.Optional(t.String({ format: "uuid" })),
+        parentId: t.Optional(t.Union([t.String({ format: "uuid" }), t.Null()])),
+        type: t.Optional(t.Union([t.Literal("folder"), t.Literal("file")]))
+      }),
+    },
+  );
+
   app.post("/items", async ({ body, set }) => {
     const parsed = createSchema.safeParse(body);
     if (!parsed.success) {

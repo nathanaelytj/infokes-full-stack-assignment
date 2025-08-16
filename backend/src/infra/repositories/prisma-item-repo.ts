@@ -2,11 +2,14 @@ import type { IItemRepository } from "../../application/ports/item-repository";
 import type { CreateItemDTO, Item, UpdateItemDTO } from "../../domain/item";
 import { prisma } from "../db/prisma";
 import { cached, invalidate } from "../cache/redis";
+import type { ItemSearchParams, ItemSearchResult } from "../../application/ports/item-repository";
 
 const CACHE_KEYS = {
   tree: "items:tree",
   children: (pid: string | null) => `items:children:${pid ?? "root"}`,
   byId: (id: string) => `items:id:${id}`,
+  search: (p: ItemSearchParams) =>
+    `items:search:q=${p.q}|pid=${p.parentId ?? ""}|type=${p.type ?? ""}|limit=${p.limit}|cursor=${p.cursor ?? ""}`,
 };
 
 export class PrismaItemRepository implements IItemRepository {
@@ -70,6 +73,30 @@ export class PrismaItemRepository implements IItemRepository {
       CACHE_KEYS.byId(id),
       CACHE_KEYS.children(existing?.parentId ?? null),
     ]);
+  }
+
+  async search(params: ItemSearchParams): Promise<ItemSearchResult> {
+    const key = CACHE_KEYS.search(params);
+    return cached(key, 15, async () => {
+      const where = {
+        AND: [
+          params.q ? { name: { contains: params.q, mode: "insensitive" } } : undefined,
+          params.parentId !== undefined ? { parentId: params.parentId } : undefined,
+          params.type ? { type: params.type } : undefined,
+        ].filter(Boolean) as object[],
+      };
+      const take = Math.min(Math.max(params.limit, 1), 100);
+      const rows = await prisma.item.findMany({
+        where,
+        take: take + 1,
+        ...(params.cursor ? { cursor: { id: params.cursor }, skip: 1 } : {}),
+        orderBy: { id: "asc" },
+      });
+      let nextCursor: string | null = null;
+      const items = rows.slice(0, take).map(map);
+      if (rows.length > take) nextCursor = rows[take].id;
+      return { items, nextCursor };
+    });
   }
 }
 

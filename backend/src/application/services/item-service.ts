@@ -1,4 +1,5 @@
 import type { CreateItemDTO, Item, UpdateItemDTO } from "../../domain/item";
+import type { ItemSearchParams, ItemSearchResult } from "../ports/item-repository";
 import type { IItemRepository } from "../ports/item-repository";
 
 export class ItemService {
@@ -27,5 +28,9 @@ export class ItemService {
 
   async delete(id: string): Promise<void> {
     return this.repo.delete(id);
+  }
+
+  async search(params: ItemSearchParams): Promise<ItemSearchResult> {
+    return this.repo.search(params);
   }
 }
