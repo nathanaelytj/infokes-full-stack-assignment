@@ -36,7 +36,15 @@ export function useExplorerData() {
   const hasChildren = (id: number) =>
     items.value.some((i) => i.parentId === id);
 
-  const roots = computed(() => childrenOf(null));
+  // Folder-only helpers for the tree view
+  const folderChildrenOf = (parentId: number | null) =>
+    items.value.filter((i) => i.parentId === parentId && i.type === "folder");
+
+  const hasFolderChildren = (id: number) =>
+    items.value.some((i) => i.parentId === id && i.type === "folder");
+
+  // Only folders should appear at the tree root
+  const roots = computed(() => folderChildrenOf(null));
 
   const pathToRoot = (id: number | null | undefined): number[] => {
     const path: number[] = [];
@@ -53,7 +61,9 @@ export function useExplorerData() {
     roots,
     byId,
     childrenOf,
+    folderChildrenOf,
     hasChildren,
+    hasFolderChildren,
     pathToRoot,
   };
 }

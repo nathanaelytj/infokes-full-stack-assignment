@@ -62,11 +62,11 @@ import {
 const props = defineProps<{ item: ExplorerItem; selectedId: number | null }>();
 const emit = defineEmits<{ (e: "select", id: number | null): void }>();
 
-const { childrenOf, hasChildren, pathToRoot } = useExplorerData();
+const { folderChildrenOf, hasFolderChildren, pathToRoot } = useExplorerData();
 
 const isFolder = computed(() => props.item.type === "folder");
-const hasKids = computed(() => hasChildren(props.item.id));
-const children = computed(() => childrenOf(props.item.id));
+const hasKids = computed(() => hasFolderChildren(props.item.id));
+const children = computed(() => folderChildrenOf(props.item.id));
 const isActive = computed(() => props.item.id === props.selectedId);
 const open = ref(false);
 

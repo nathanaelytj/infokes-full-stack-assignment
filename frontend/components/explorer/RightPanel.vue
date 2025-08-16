@@ -13,7 +13,7 @@
         <div
           class="col-span-full flex flex-col items-center justify-center p-6 text-gray-500"
         >
-          <UIcon name="i-heroicons-folder" class="w-12 h-12 text-primary" />
+          <UIcon name="i-heroicons-folder" class="w-12 h-12 text-blue-500" />
           <span class="mt-2 text-sm">Select a folder</span>
         </div>
       </template>
@@ -40,7 +40,7 @@
           <UIcon
             v-if="child.type === 'folder'"
             name="i-heroicons-folder"
-            class="w-12 h-12 text-primary"
+            class="w-12 h-12 text-blue-500"
           />
           <UIcon
             v-else
