@@ -1,122 +1,115 @@
 # Windows Explorer Backend
 
-## Description
+Backend API for the Windows Explorer app. Built with Elysia (Bun), Prisma (PostgreSQL), optional Redis caching, and Vitest. Follows a clean architecture with clear separation between HTTP, application, domain, and infra layers.
 
-This is the backend service for the Windows Explorer application. Built with Elysia, it serves as the API for the frontend, providing a scalable and high-performance way to manage and retrieve folder and file data. The architecture is designed with separation of concerns in mind, using a service and repository pattern.
+## Tech
 
-## Technologies
+- Framework: Elysia
+- Runtime: Bun
+- Language: TypeScript
+- Database: PostgreSQL + Prisma
+- Cache: Redis (optional)
+- Testing: Vitest
 
-- **Framework:** [Elysia](https://elysiajs.com/)
-- **Runtime:** [Bun](https://bun.sh/)
-- **Language:** [TypeScript](https://www.typescriptlang.org/)
-- **Database:** [PostgreSQL](https://www.postgresql.org/)
-- **Caching:** [Redis](https://redis.io/)
-- **Testing:** [Vitest](https://vitest.dev/)
+## Architecture & Structure
 
-## Architecture
+Key layers and where they live in this repo:
 
-The backend follows a clean architecture pattern with distinct layers to improve maintainability and testability:
+- interfaces/http: Elysia routes (HTTP layer)
+- application: business services and ports (use cases)
+- domain: entities and types
+- infra: Prisma/Redis adapters (DB, cache, repositories)
 
-- **Repository Layer:** Handles all direct interactions with the database (PostgreSQL) and the cache (Redis). It abstracts the data storage details away from the rest of the application.
-- **Service Layer:** Contains the business logic. It orchestrates calls to the repository layer and applies business rules to the data before returning it.
-- **Elysia Routes:** Define the API endpoints. They are kept "thin" and primarily responsible for handling HTTP requests and responses by calling the appropriate service methods.
-
-## Project Structure
+Project layout (trimmed):
 
 ```
-/backend
-├── src/
-│   ├── services/         # Business logic: orchestrates data and applies rules
-│   │   └── folder.service.ts
-│   ├── repositories/     # Data access: handles communication with DB and cache
-│   │   └── folder.repository.ts
-│   ├── plugins/          # Elysia plugins for dependencies like Redis or DB
-│   │   ├── redis.plugin.ts
-│   │   └── db.plugin.ts
-│   └── index.ts          # Main Elysia application and route definitions
-├── .env.example          # Template for environment variables
-├── package.json          # Package dependencies and scripts
-└── tsconfig.json         # TypeScript configuration
+backend/
+├─ src/
+│  ├─ index.ts                      # Create and start Elysia app
+│  ├─ config/env.ts                 # Env parsing (PORT, DATABASE_URL, REDIS_URL)
+│  ├─ interfaces/http/routes.ts     # /api/v1 routes
+│  ├─ application/
+│  │  ├─ ports/item-repository.ts
+│  │  └─ services/item-service.ts
+│  ├─ domain/item.ts
+│  └─ infra/
+│     ├─ db/prisma.ts
+│     ├─ cache/redis.ts
+│     └─ repositories/prisma-item-repo.ts
+└─ prisma/schema.prisma
 ```
 
 ## Getting Started
 
-### Prerequisites
+### Prereqs
 
-- [Bun](https://bun.sh/) runtime installed.
-- [Docker](https://www.docker.com/) for running PostgreSQL and Redis.
+- Bun runtime
+- PostgreSQL reachable via DATABASE_URL
+- Redis optional (set REDIS_URL to enable cache)
 
-### 1\. Environment Setup
+### 1) Configure env
 
-Create a `.env` file from the example and configure your database and Redis connection details.
+From `backend/`, copy and edit `.env`:
 
-```bash
+```
 cp .env.example .env
 ```
 
-### 2\. Database and Caching
+`.env` keys:
 
-The `docker-compose.yml` file in the project root can be used to start the necessary services. From the root directory of the monorepo:
+- DATABASE_URL=postgresql://user:pass@host:5432/db
+- REDIS_URL=redis://localhost:6379 (optional)
+- PORT=3000 (recommend 3001 if running Nuxt dev on 3000)
 
-```bash
-docker-compose up -d postgres redis
+### 2) Install deps
+
 ```
-
-### 3\. Install Dependencies
-
-From the `/backend` directory, install the dependencies.
-
-```bash
-cd backend
 bun install
 ```
 
-### 4\. Running the Application
+### 3) Init database
 
-To start the development server, run the following command from the `/backend` directory:
+```
+bun run prisma:generate
+bun run prisma:push
+```
 
-```bash
+Optional seed: see `stack/seeder.sql` (load with your preferred tool).
+
+### 4) Run
+
+```
 bun dev
 ```
 
-The backend API will be available at `http://localhost:3001` (or the port defined in your `.env` file).
+Server listens on `PORT` (default 3000). If you also run the Nuxt frontend (default 3000), set backend `PORT=3001` and point the frontend to it.
 
-## API Endpoints
+## API
 
-The backend provides the following key endpoints:
+Base URL: `/api/v1`
 
-### `GET /api/folders`
+- GET /health → { status: "ok" }
+- GET /items → full tree (flat list ordered, client can build tree)
+- GET /items/:id → one item or 404
+- GET /items/children?parentId=<uuid|null> → direct children
+- GET /items/search?q=...&parentId=...&type=folder|file&limit=1..100&cursor=<uuid> → paginated search
+- POST /items { name, parentId|null, type: "folder"|"file" }
+- PATCH /items/:id { name?, parentId? }
+- DELETE /items/:id → 204
 
-- **Description:** Retrieves the complete hierarchical folder structure. This endpoint is called on initial page load to populate the left-hand panel.
-- **Response:** A JSON object representing the entire folder tree.
+Notes
 
-### `GET /api/folders/:id`
+- CORS is enabled for localhost and its subdomains by default (see `src/index.ts`).
+- Redis is optional; without `REDIS_URL`, caching is bypassed.
 
-- **Description:** Retrieves the direct subfolders and files for a specific folder.
-- **URL Parameters:**
-  - `id` (string): The unique identifier of the folder to retrieve contents for.
-- **Response:** A JSON object containing an array of folders and files.
+## Testing
 
-# Backend
+```
+bun run test            # unit tests (Vitest)
+bun run test:watch
+bun run test:coverage
+```
 
-Clean Architecture with Elysia + Prisma + Redis.
+## Production
 
-- REST: /api/v1
-- Entities: Item (folder/file), hierarchical via parentId
-
-## Run
-
-1. Copy `.env.example` to `.env` and set DATABASE_URL (+ REDIS_URL optional)
-2. Install deps and generate Prisma client
-3. Push schema or run migrations
-4. Start server
-
-## REST endpoints
-
-- GET /api/v1/health
-- GET /api/v1/items
-- GET /api/v1/items/:id
-- GET /api/v1/items/children?parentId=<uuid|null>
-- POST /api/v1/items { name, parentId, type }
-- PATCH /api/v1/items/:id { name?, parentId? }
-- DELETE /api/v1/items/:id
+Docker Swarm manifests live under `stack/deploy/`. For local dev, use your own Postgres/Redis containers or services; a docker-compose file is not included here.
