@@ -1,7 +1,7 @@
 <template>
   <div class="p-6 min-h-screen bg-gray-100 flex flex-col">
     <header class="text-center mb-4">
-      <h1 class="text-3xl font-bold text-gray-800">Windows Explorer Mockup</h1>
+      <h1 class="text-3xl font-bold text-gray-800">Windows Explorer</h1>
     </header>
 
     <div class="flex-1 flex overflow-hidden bg-white rounded-xl shadow-lg">
@@ -18,6 +18,7 @@
 </template>
 
 <script setup lang="ts">
+useHead({ title: 'Windows Explorer' })
 import ExplorerTree from "~/components/explorer/Tree.vue";
 import RightPanel from "~/components/explorer/RightPanel.vue";
 import { useExplorerData } from "~/composables/useExplorerData";
