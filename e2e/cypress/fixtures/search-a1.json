@@ -1,0 +1,4 @@
+{
+  "data": [{ "id": "a-1", "name": "A1", "type": "folder", "parentId": "root-a" }],
+  "nextCursor": null
+}

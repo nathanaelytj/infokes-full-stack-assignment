@@ -1,0 +1,15 @@
+{
+  "data": [
+    { "id": "root-a", "name": "Root A", "type": "folder", "parentId": null },
+    { "id": "root-b", "name": "Root B", "type": "folder", "parentId": null },
+
+    { "id": "a-1", "name": "A1", "type": "folder", "parentId": "root-a" },
+    { "id": "a-2", "name": "A2", "type": "folder", "parentId": "root-a" },
+
+    { "id": "a-1-file", "name": "Doc A1.txt", "type": "file", "parentId": "a-1" },
+    { "id": "a-2-file", "name": "Doc A2.txt", "type": "file", "parentId": "a-2" },
+
+    { "id": "b-1", "name": "B1", "type": "folder", "parentId": "root-b" },
+    { "id": "b-1-file", "name": "Doc B1.txt", "type": "file", "parentId": "b-1" }
+  ]
+}
