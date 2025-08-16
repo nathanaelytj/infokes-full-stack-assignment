@@ -30,10 +30,13 @@ export function useExplorerSearch(limit = 20) {
     loading.value = true;
     const params = new URLSearchParams({ q, limit: String(limit) });
     if (cursor) params.set("cursor", cursor);
-    const { data, error } = await useFetch<{ data: ExplorerItem[]; nextCursor: string | null }>(
-      `${base}/api/v1/items/search?${params.toString()}`,
-      { key: `items:search:${q}:${cursor ?? ""}`, server: false },
-    );
+    const { data, error } = await useFetch<{
+      data: ExplorerItem[];
+      nextCursor: string | null;
+    }>(`${base}/api/v1/items/search?${params.toString()}`, {
+      key: `items:search:${q}:${cursor ?? ""}`,
+      server: false,
+    });
 
     if (!error.value) {
       const payload = data.value;
@@ -69,6 +72,17 @@ export function useExplorerSearch(limit = 20) {
     }
   }
 
+  function hide() {
+    // Keep query text, but hide results and stop any pending search
+    results.value = [];
+    nextCursor.value = null;
+    touched.value = false;
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+  }
+
   watch(
     () => query.value,
     () => {
@@ -88,5 +102,6 @@ export function useExplorerSearch(limit = 20) {
     setQuery,
     loadMore,
     clear,
+    hide,
   };
 }

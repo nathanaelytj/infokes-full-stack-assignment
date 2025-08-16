@@ -1,10 +1,15 @@
 <template>
   <div class="p-6 min-h-screen bg-gray-100 flex flex-col">
     <header class="mb-4 space-y-3">
-      <h1 class="text-3xl font-bold text-gray-800 text-center">Windows Explorer</h1>
+      <h1 class="text-3xl font-bold text-gray-800 text-center">
+        Windows Explorer
+      </h1>
       <div class="max-w-3xl mx-auto">
         <SearchBar v-model="search.queryStr" />
-        <div v-if="search.touched && search.queryStr.trim().length >= 2" class="mt-2 text-sm text-gray-600">
+        <div
+          v-if="search.touched && search.queryStr.trim().length >= 2"
+          class="mt-2 text-sm text-gray-600"
+        >
           <span v-if="search.loading">Searching…</span>
           <span v-else>{{ search.results.length }} result(s)</span>
         </div>
@@ -40,13 +45,22 @@
                   name="i-heroicons-document"
                   class="w-12 h-12 text-gray-500"
                 />
-                <span class="mt-2 text-sm text-gray-600 text-center truncate w-full" :title="item.name">{{ item.name }}</span>
+                <span
+                  class="mt-2 text-sm text-gray-600 text-center truncate w-full"
+                  :title="item.name"
+                  >{{ item.name }}</span
+                >
               </div>
             </div>
-            <div class="mt-4 flex justify-center" v-if="search.nextCursor && !search.loading">
-              <UButton color="primary" variant="soft" @click="search.loadMore()">Load more</UButton>
+            <div
+              v-if="search.nextCursor && !search.loading"
+              class="mt-4 flex justify-center"
+            >
+              <UButton color="primary" variant="soft" @click="search.loadMore()"
+                >Load more</UButton
+              >
             </div>
-            <div class="mt-4 flex justify-center" v-if="search.loading">
+            <div v-if="search.loading" class="mt-4 flex justify-center">
               <ULoader size="lg" />
             </div>
           </section>
@@ -96,6 +110,8 @@ const search = reactive({
 function onSelectFromTree(id: string | null) {
   const item = byId(id ?? undefined);
   const isSelected = selectedId.value === id;
+  // Hide search results (retain text) when a folder is selected from the tree
+  searchCtl.hide();
   if (item?.type === "folder" && isSelected) {
     // collapse to parent
     const parent = byId(item.parentId ?? undefined);
@@ -106,6 +122,8 @@ function onSelectFromTree(id: string | null) {
 }
 
 function onOpenFromRight(id: string | null) {
+  // Hide search results when navigating via right panel
+  searchCtl.hide();
   updateUI(id);
 }
 
@@ -113,10 +131,16 @@ onMounted(() => {
   updateUI(null);
 });
 
-function onResultClick(item: { id: string; type: 'folder' | 'file'; parentId: string | null }) {
+function onResultClick(item: {
+  id: string;
+  type: "folder" | "file";
+  parentId: string | null;
+}) {
   // When clicking a search result:
   // - if folder: navigate to it
   // - if file: open its parent folder
-  updateUI(item.type === 'folder' ? item.id : item.parentId);
+  // Hide search upon navigating to a folder from results
+  searchCtl.hide();
+  updateUI(item.type === "folder" ? item.id : item.parentId);
 }
 </script>

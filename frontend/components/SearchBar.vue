@@ -13,9 +13,9 @@
           color="neutral"
           variant="ghost"
           icon="i-heroicons-x-mark"
-          @click="onClear"
           aria-label="Clear search"
           data-testid="clear-search"
+          @click="onClear"
         />
       </template>
     </UInput>
@@ -23,23 +23,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch } from "vue";
 
-const props = defineProps<{ modelValue: string }>()
-const emit = defineEmits<{ (e: 'update:modelValue', v: string): void }>()
+const props = defineProps<{ modelValue: string }>();
+const emit = defineEmits<{ (e: "update:modelValue", v: string): void }>();
 
-const local = ref(props.modelValue)
+const local = ref(props.modelValue);
 
 watch(
   () => props.modelValue,
   (v) => {
-    if (v !== local.value) local.value = v
+    if (v !== local.value) local.value = v;
   },
-)
+);
 
-watch(local, (v) => emit('update:modelValue', v))
+watch(local, (v) => emit("update:modelValue", v));
 
 function onClear() {
-  local.value = ''
+  local.value = "";
 }
 </script>

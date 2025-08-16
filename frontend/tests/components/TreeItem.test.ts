@@ -71,7 +71,7 @@ describe("TreeItem", () => {
           TreeItem: {
             props: ["item", "selectedId"],
             template:
-              '<li role="listitem"><button @click="$emit(\'select\', \'3\')">child</button></li>',
+              "<li role=\"listitem\"><button @click=\"$emit('select', '3')\">child</button></li>",
           },
         },
       },
