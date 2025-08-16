@@ -13,19 +13,7 @@
         <div
           class="col-span-full flex flex-col items-center justify-center p-6 text-gray-500"
         >
-          <svg
-            class="w-12 h-12 text-blue-400"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-            />
-          </svg>
+          <UIcon name="i-heroicons-folder" class="w-12 h-12 text-primary" />
           <span class="mt-2 text-sm">Select a folder</span>
         </div>
       </template>
@@ -33,19 +21,10 @@
         <div
           class="col-span-full flex flex-col items-center justify-center p-8 text-gray-500"
         >
-          <svg
+          <UIcon
+            name="i-heroicons-information-circle"
             class="w-16 h-16 text-gray-400"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          />
           <p class="mt-2">This folder is empty.</p>
         </div>
       </template>
@@ -58,34 +37,16 @@
           :data-type="child.type"
           @click="onItemClick(child.id)"
         >
-          <svg
+          <UIcon
             v-if="child.type === 'folder'"
-            class="w-12 h-12 text-blue-400"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-            />
-          </svg>
-          <svg
+            name="i-heroicons-folder"
+            class="w-12 h-12 text-primary"
+          />
+          <UIcon
             v-else
+            name="i-heroicons-document"
             class="w-12 h-12 text-gray-500"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
+          />
           <span
             class="mt-2 text-sm text-gray-600 text-center truncate w-full"
             :title="child.name"

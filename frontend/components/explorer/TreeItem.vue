@@ -10,52 +10,25 @@
         class="inline-flex items-center justify-center"
         @click.stop="toggle"
       >
-        <svg
-          class="size-4 text-gray-500 transition-transform"
+        <UIcon
+          name="i-heroicons-chevron-right-20-solid"
+          class="w-4 h-4 text-gray-500 transition-transform"
           :class="{ 'rotate-90': open }"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
+        />
       </span>
-      <span v-else class="inline-block size-4" />
+      <span v-else class="inline-block w-4 h-4" />
 
       <span class="inline-flex">
-        <svg
+        <UIcon
           v-if="isFolder"
-          class="size-5 text-blue-500"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-          />
-        </svg>
-        <svg
+          name="i-heroicons-folder"
+          class="w-5 h-5 text-blue-500"
+        />
+        <UIcon
           v-else
-          class="size-5 text-gray-500"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
-        </svg>
+          name="i-heroicons-document"
+          class="w-5 h-5 text-gray-500"
+        />
       </span>
 
       <span class="truncate">{{ item.name }}</span>

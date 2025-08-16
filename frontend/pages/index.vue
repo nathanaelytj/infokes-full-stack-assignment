@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-useHead({ title: 'Windows Explorer' })
+useHead({ title: "Windows Explorer" });
 import ExplorerTree from "~/components/explorer/Tree.vue";
 import RightPanel from "~/components/explorer/RightPanel.vue";
 import { useExplorerData } from "~/composables/useExplorerData";
