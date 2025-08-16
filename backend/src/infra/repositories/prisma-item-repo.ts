@@ -77,17 +77,22 @@ type Row = {
   id: string;
   name: string;
   parentId: string | null;
-  type: Item["type"];
+  type: string;
   createdAt: Date;
   updatedAt: Date;
 };
+
+function toDomainType(s: string): Item["type"] {
+  if (s === "folder" || s === "file") return s;
+  throw new Error(`Invalid item type: ${s}`);
+}
 
 function map(row: Row): Item {
   return {
     id: row.id,
     name: row.name,
     parentId: row.parentId,
-    type: row.type,
+    type: toDomainType(row.type),
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };

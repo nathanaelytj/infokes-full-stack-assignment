@@ -27,7 +27,7 @@ import { useExplorerState } from "~/composables/useExplorerState";
 const { byId } = useExplorerData();
 const { selectedId, updateUI } = useExplorerState();
 
-function onSelectFromTree(id: number | null) {
+function onSelectFromTree(id: string | null) {
   const item = byId(id ?? undefined);
   const isSelected = selectedId.value === id;
   if (item?.type === "folder" && isSelected) {
@@ -39,7 +39,7 @@ function onSelectFromTree(id: number | null) {
   }
 }
 
-function onOpenFromRight(id: number | null) {
+function onOpenFromRight(id: string | null) {
   updateUI(id);
 }
 

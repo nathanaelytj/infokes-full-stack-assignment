@@ -62,8 +62,8 @@
 import { computed } from "vue";
 import { useExplorerData } from "~/composables/useExplorerData";
 
-const props = defineProps<{ selectedId: number | null }>();
-const emit = defineEmits<{ (e: "open", id: number | null): void }>();
+const props = defineProps<{ selectedId: string | null }>();
+const emit = defineEmits<{ (e: "open", id: string | null): void }>();
 
 const { byId, childrenOf } = useExplorerData();
 
@@ -77,7 +77,7 @@ const children = computed(() =>
   props.selectedId == null ? [] : childrenOf(props.selectedId),
 );
 
-function onItemClick(id: number) {
+function onItemClick(id: string) {
   const item = byId(id);
   if (item?.type === "folder") emit("open", id);
 }

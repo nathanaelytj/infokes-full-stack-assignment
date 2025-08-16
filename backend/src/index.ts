@@ -4,11 +4,6 @@ import { env } from "./config/env";
 
 export function createApp() {
   const app = new Elysia();
-  app.get("/health", () => ({
-    status: "ok",
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-  }));
   app.use(apiV1());
   return app;
 }

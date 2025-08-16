@@ -3,21 +3,21 @@ import { describe, it, expect, vi } from "vitest";
 import TreeItem from "~/components/explorer/TreeItem.vue";
 
 const dataset = [
-  { id: 1, name: "root", type: "folder", parentId: null },
-  { id: 2, name: "child-folder", type: "folder", parentId: 1 },
-  { id: 3, name: "doc.md", type: "file", parentId: 2 },
+  { id: "1", name: "root", type: "folder", parentId: null },
+  { id: "2", name: "child-folder", type: "folder", parentId: "1" },
+  { id: "3", name: "doc.md", type: "file", parentId: "2" },
 ] as const;
 
 vi.mock("~/composables/useExplorerData", () => {
-  function folderChildrenOf(id: number) {
+  function folderChildrenOf(id: string) {
     return dataset.filter((d) => d.parentId === id && d.type === "folder");
   }
-  function hasFolderChildren(id: number) {
+  function hasFolderChildren(id: string) {
     return folderChildrenOf(id).length > 0;
   }
-  function pathToRoot(id: number | null) {
-    if (id == null) return [] as number[];
-    const path: number[] = [];
+  function pathToRoot(id: string | null) {
+    if (id == null) return [] as string[];
+    const path: string[] = [];
     let cur = dataset.find((d) => d.id === id);
     while (cur && cur.parentId != null) {
       path.unshift(cur.parentId);
@@ -44,7 +44,7 @@ describe("TreeItem", () => {
   it("renders folder icon and emits select on row click", async () => {
     const emitSelect = vi.fn();
     const { container } = render(TreeItem, {
-      props: { item: dataset[0] as any, selectedId: null },
+  props: { item: dataset[0] as any, selectedId: null },
       global,
       attrs: { onSelect: emitSelect },
     });
@@ -58,20 +58,20 @@ describe("TreeItem", () => {
     // Click the folder line -> emit select with its id
     const row = screen.getByText(/root/i).closest("div");
     await fireEvent.click(row!);
-    expect(emitSelect).toHaveBeenCalledWith(1);
+  expect(emitSelect).toHaveBeenCalledWith("1");
   });
 
   it("propagates select from child items", async () => {
     const emitSelect = vi.fn();
     render(TreeItem, {
-      props: { item: dataset[0] as any, selectedId: null },
+  props: { item: dataset[0] as any, selectedId: null },
       global: {
         stubs: {
           ...global.stubs,
           TreeItem: {
             props: ["item", "selectedId"],
             template:
-              '<li role="listitem"><button @click="$emit(\'select\', 3)">child</button></li>',
+              '<li role="listitem"><button @click="$emit(\'select\', \"3\")">child</button></li>',
           },
         },
       },
@@ -80,6 +80,6 @@ describe("TreeItem", () => {
 
     const btn = screen.getByRole("button", { name: /child/i });
     await fireEvent.click(btn);
-    expect(emitSelect).toHaveBeenCalledWith(3);
+  expect(emitSelect).toHaveBeenCalledWith("3");
   });
 });

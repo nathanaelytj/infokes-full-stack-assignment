@@ -59,8 +59,8 @@ import {
   type ExplorerItem,
 } from "~/composables/useExplorerData";
 
-const props = defineProps<{ item: ExplorerItem; selectedId: number | null }>();
-const emit = defineEmits<{ (e: "select", id: number | null): void }>();
+const props = defineProps<{ item: ExplorerItem; selectedId: string | null }>();
+const emit = defineEmits<{ (e: "select", id: string | null): void }>();
 
 const { folderChildrenOf, hasFolderChildren, pathToRoot } = useExplorerData();
 

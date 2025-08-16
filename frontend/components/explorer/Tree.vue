@@ -17,12 +17,12 @@
 import { useExplorerData } from "~/composables/useExplorerData";
 import TreeItem from "./TreeItem.vue";
 
-const { selectedId } = defineProps<{ selectedId: number | null }>();
-const emit = defineEmits<{ (e: "select", id: number | null): void }>();
+const { selectedId } = defineProps<{ selectedId: string | null }>();
+const emit = defineEmits<{ (e: "select", id: string | null): void }>();
 
 const { roots } = useExplorerData();
 
-function onSelect(id: number | null) {
+function onSelect(id: string | null) {
   emit("select", id);
 }
 </script>
