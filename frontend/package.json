@@ -12,6 +12,8 @@
     "test:watch": "vitest --reporter=verbose --watch",
     "test:coverage": "vitest --reporter=html --coverage",
     "test:coverage:watch": "vitest --reporter=html --coverage --watch",
+    "test:node": "npx vitest --reporter=verbose",
+    "test:node:watch": "npx vitest",
     "test:browser": "vitest --reporter=html --coverage --browser",
     "test:browser:watch": "vitest --reporter=html --coverage --browser --watch",
     "test:browser:debug": "vitest --reporter=html --coverage --browser --watch --debug",

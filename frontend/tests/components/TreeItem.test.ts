@@ -25,7 +25,13 @@ vi.mock("~/composables/useExplorerData", () => {
     }
     return path;
   }
-  return { useExplorerData: () => ({ folderChildrenOf, hasFolderChildren, pathToRoot }) };
+  return {
+    useExplorerData: () => ({
+      folderChildrenOf,
+      hasFolderChildren,
+      pathToRoot,
+    }),
+  };
 });
 
 const global = {
