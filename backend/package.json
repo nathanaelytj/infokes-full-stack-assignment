@@ -1,15 +1,39 @@
 {
-  "name": "app",
+  "name": "infokes-backend",
   "version": "1.0.50",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts"
+    "dev": "bun --watch src/index.ts",
+    "build": "rm -rf public/build public/hot && vite build",
+    "all:fix": "bun run prettier:fix && bun run eslint:fix",
+    "eslint": "eslint .",
+    "eslint:fix": "eslint . --fix",
+    "prettier": "prettier --check .",
+    "prettier:fix": "prettier --write .",
+    "test": "vitest --reporter=verbose",
+    "test:watch": "vitest --reporter=verbose --watch",
+    "test:coverage": "vitest run --reporter=html --coverage",
+    "test:coverage:watch": "vitest --reporter=html --coverage --watch",
+    "test:browser": "vitest run --reporter=html --coverage --browser",
+    "test:browser:watch": "vitest --reporter=html --coverage --browser --watch",
+    "test:browser:debug": "vitest --reporter=html --coverage --browser --watch --debug"
   },
   "dependencies": {
     "elysia": "latest"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "@types/node": "^24.2.1",
+    "bun-types": "latest",
+    "vitest": "^3.2.4",
+    "@tsconfig/recommended": "^1.0.10",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-vue": "^9.33.0",
+    "globals": "^16.3.0",
+    "jsdom": "^26.1.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.39.1"
   },
   "module": "src/index.js"
 }

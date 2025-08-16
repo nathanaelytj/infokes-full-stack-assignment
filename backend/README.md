@@ -6,20 +6,20 @@ This is the backend service for the Windows Explorer application. Built with Ely
 
 ## Technologies
 
-  * **Framework:** [Elysia](https://elysiajs.com/)
-  * **Runtime:** [Bun](https://bun.sh/)
-  * **Language:** [TypeScript](https://www.typescriptlang.org/)
-  * **Database:** [PostgreSQL](https://www.postgresql.org/)
-  * **Caching:** [Redis](https://redis.io/)
-  * **Testing:** [Vitest](https://vitest.dev/)
+- **Framework:** [Elysia](https://elysiajs.com/)
+- **Runtime:** [Bun](https://bun.sh/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Database:** [PostgreSQL](https://www.postgresql.org/)
+- **Caching:** [Redis](https://redis.io/)
+- **Testing:** [Vitest](https://vitest.dev/)
 
 ## Architecture
 
 The backend follows a clean architecture pattern with distinct layers to improve maintainability and testability:
 
-  * **Repository Layer:** Handles all direct interactions with the database (PostgreSQL) and the cache (Redis). It abstracts the data storage details away from the rest of the application.
-  * **Service Layer:** Contains the business logic. It orchestrates calls to the repository layer and applies business rules to the data before returning it.
-  * **Elysia Routes:** Define the API endpoints. They are kept "thin" and primarily responsible for handling HTTP requests and responses by calling the appropriate service methods.
+- **Repository Layer:** Handles all direct interactions with the database (PostgreSQL) and the cache (Redis). It abstracts the data storage details away from the rest of the application.
+- **Service Layer:** Contains the business logic. It orchestrates calls to the repository layer and applies business rules to the data before returning it.
+- **Elysia Routes:** Define the API endpoints. They are kept "thin" and primarily responsible for handling HTTP requests and responses by calling the appropriate service methods.
 
 ## Project Structure
 
@@ -43,8 +43,8 @@ The backend follows a clean architecture pattern with distinct layers to improve
 
 ### Prerequisites
 
-  * [Bun](https://bun.sh/) runtime installed.
-  * [Docker](https://www.docker.com/) for running PostgreSQL and Redis.
+- [Bun](https://bun.sh/) runtime installed.
+- [Docker](https://www.docker.com/) for running PostgreSQL and Redis.
 
 ### 1\. Environment Setup
 
@@ -87,15 +87,15 @@ The backend provides the following key endpoints:
 
 ### `GET /api/folders`
 
-  * **Description:** Retrieves the complete hierarchical folder structure. This endpoint is called on initial page load to populate the left-hand panel.
-  * **Response:** A JSON object representing the entire folder tree.
+- **Description:** Retrieves the complete hierarchical folder structure. This endpoint is called on initial page load to populate the left-hand panel.
+- **Response:** A JSON object representing the entire folder tree.
 
 ### `GET /api/folders/:id`
 
-  * **Description:** Retrieves the direct subfolders and files for a specific folder.
-  * **URL Parameters:**
-      * `id` (string): The unique identifier of the folder to retrieve contents for.
-  * **Response:** A JSON object containing an array of folders and files.
+- **Description:** Retrieves the direct subfolders and files for a specific folder.
+- **URL Parameters:**
+  - `id` (string): The unique identifier of the folder to retrieve contents for.
+- **Response:** A JSON object containing an array of folders and files.
 
 ## Testing
 
