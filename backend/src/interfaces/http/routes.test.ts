@@ -36,7 +36,7 @@ async function json(res: Response) {
 }
 
 function makeReq(url: string, init?: RequestInit) {
-  const headers = new Headers((init && (init.headers as any)) || {})q
+  const headers = new Headers((init && (init.headers as any)) || {})
   if (!headers.has('Origin')) headers.set('Origin', 'http://localhost')
   return new Request(url, { ...(init || {}), headers })
 }
