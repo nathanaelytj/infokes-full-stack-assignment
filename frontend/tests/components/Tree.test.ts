@@ -3,8 +3,8 @@ import { describe, it, expect, vi } from "vitest";
 import Tree from "~/components/explorer/Tree.vue";
 
 const roots = [
-  { id: 1, name: "root1", type: "folder", parentId: null },
-  { id: 2, name: "root2", type: "folder", parentId: null },
+  { id: "1", name: "root1", type: "folder", parentId: null },
+  { id: "2", name: "root2", type: "folder", parentId: null },
 ];
 
 vi.mock("~/composables/useExplorerData", () => ({
@@ -46,6 +46,6 @@ describe("Tree", () => {
     await fireEvent.click(firstBtn);
 
     expect(onSelect).toHaveBeenCalledTimes(1);
-    expect(onSelect).toHaveBeenCalledWith(1);
+    expect(onSelect).toHaveBeenCalledWith("1");
   });
 });

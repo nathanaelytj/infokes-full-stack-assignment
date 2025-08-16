@@ -4,9 +4,9 @@ import { useExplorerData } from "./useExplorerData";
 export function useExplorerState() {
   const { byId } = useExplorerData();
 
-  const selectedId = ref<number | null>(null);
+  const selectedId = ref<string | null>(null);
 
-  function updateUI(newId: number | null) {
+  function updateUI(newId: string | null) {
     const item = byId(newId ?? undefined);
     if (item && item.type === "file") {
       selectedId.value = item.parentId;

@@ -18,10 +18,6 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     include: ["tests/**/*.test.ts"],
-    // Inline Nuxt-specific runtime deps so vitest doesn't try to mock them
-    deps: {
-      inline: [/nuxt/, /@nuxt/],
-    },
     setupFiles: ["./tests/setup.ts"],
   },
 });

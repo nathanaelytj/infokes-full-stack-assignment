@@ -97,10 +97,26 @@ The backend provides the following key endpoints:
   - `id` (string): The unique identifier of the folder to retrieve contents for.
 - **Response:** A JSON object containing an array of folders and files.
 
-## Testing
+# Backend
 
-To run the Vitest unit and integration tests for the backend, use the following command from the `/backend` directory:
+Clean Architecture with Elysia + Prisma + Redis.
 
-```bash
-bun test
-```
+- REST: /api/v1
+- Entities: Item (folder/file), hierarchical via parentId
+
+## Run
+
+1. Copy `.env.example` to `.env` and set DATABASE_URL (+ REDIS_URL optional)
+2. Install deps and generate Prisma client
+3. Push schema or run migrations
+4. Start server
+
+## REST endpoints
+
+- GET /api/v1/health
+- GET /api/v1/items
+- GET /api/v1/items/:id
+- GET /api/v1/items/children?parentId=<uuid|null>
+- POST /api/v1/items { name, parentId, type }
+- PATCH /api/v1/items/:id { name?, parentId? }
+- DELETE /api/v1/items/:id

@@ -1,0 +1,126 @@
+import type { IItemRepository } from "../../application/ports/item-repository";
+import type { CreateItemDTO, Item, UpdateItemDTO } from "../../domain/item";
+import { prisma } from "../db/prisma";
+import { cached, invalidate } from "../cache/redis";
+import type { ItemSearchParams, ItemSearchResult } from "../../application/ports/item-repository";
+
+const CACHE_KEYS = {
+  tree: "items:tree",
+  children: (pid: string | null) => `items:children:${pid ?? "root"}`,
+  byId: (id: string) => `items:id:${id}`,
+  search: (p: ItemSearchParams) =>
+    `items:search:q=${p.q}|pid=${p.parentId ?? ""}|type=${p.type ?? ""}|limit=${p.limit}|cursor=${p.cursor ?? ""}`,
+};
+
+export class PrismaItemRepository implements IItemRepository {
+  async findById(id: string): Promise<Item | null> {
+    return cached(CACHE_KEYS.byId(id), 60, async () => {
+      const it = await prisma.item.findUnique({ where: { id } });
+      return it ? map(it) : null;
+    });
+  }
+
+  async listChildren(parentId: string | null): Promise<Item[]> {
+    return cached(CACHE_KEYS.children(parentId), 30, async () => {
+      const rows = await prisma.item.findMany({
+        where: { parentId: parentId ?? null },
+        orderBy: { name: "asc" },
+      });
+      return rows.map(map);
+    });
+  }
+
+  async listTree(): Promise<Item[]> {
+    return cached(CACHE_KEYS.tree, 60, async () => {
+      const rows = await prisma.item.findMany({
+        orderBy: [{ parentId: "asc" }, { name: "asc" }],
+      });
+      return rows.map(map);
+    });
+  }
+
+  async create(data: CreateItemDTO): Promise<Item> {
+    const it = await prisma.item.create({
+      data: {
+        id: crypto.randomUUID(),
+        name: data.name,
+        parentId: data.parentId,
+        type: data.type,
+      },
+    });
+    await invalidate([
+      CACHE_KEYS.tree,
+      CACHE_KEYS.children(data.parentId ?? null),
+    ]);
+    return map(it);
+  }
+
+  async update(id: string, data: UpdateItemDTO): Promise<Item> {
+    const it = await prisma.item.update({ where: { id }, data });
+    await invalidate([
+      CACHE_KEYS.tree,
+      CACHE_KEYS.byId(id),
+      CACHE_KEYS.children(it.parentId ?? null),
+    ]);
+    return map(it);
+  }
+
+  async delete(id: string): Promise<void> {
+    const existing = await prisma.item.findUnique({ where: { id } });
+    await prisma.item.delete({ where: { id } });
+    await invalidate([
+      CACHE_KEYS.tree,
+      CACHE_KEYS.byId(id),
+      CACHE_KEYS.children(existing?.parentId ?? null),
+    ]);
+  }
+
+  async search(params: ItemSearchParams): Promise<ItemSearchResult> {
+    const key = CACHE_KEYS.search(params);
+    return cached(key, 15, async () => {
+      const where = {
+        AND: [
+          params.q ? { name: { contains: params.q, mode: "insensitive" } } : undefined,
+          params.parentId !== undefined ? { parentId: params.parentId } : undefined,
+          params.type ? { type: params.type } : undefined,
+        ].filter(Boolean) as object[],
+      };
+      const take = Math.min(Math.max(params.limit, 1), 100);
+      const rows = await prisma.item.findMany({
+        where,
+        take: take + 1,
+        ...(params.cursor ? { cursor: { id: params.cursor }, skip: 1 } : {}),
+        orderBy: { id: "asc" },
+      });
+      let nextCursor: string | null = null;
+      const items = rows.slice(0, take).map(map);
+      if (rows.length > take) nextCursor = rows[take].id;
+      return { items, nextCursor };
+    });
+  }
+}
+
+type Row = {
+  id: string;
+  name: string;
+  parentId: string | null;
+  type: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+function toDomainType(s: string): Item["type"] {
+  if (s === "folder" || s === "file") return s;
+  throw new Error(`Invalid item type: ${s}`);
+}
+
+function map(row: Row): Item {
+  return {
+    id: row.id,
+    name: row.name,
+    parentId: row.parentId,
+    type: toDomainType(row.type),
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
