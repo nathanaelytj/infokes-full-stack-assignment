@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Item {
+  id        String   @id @db.Uuid
+  name      String   @db.VarChar(255)
+  parentId  String?  @db.Uuid
+  type      ItemType
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  parent    Item?    @relation("ItemToChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Item[]   @relation("ItemToChildren")
+
+  @@index([parentId])
+}
+
+enum ItemType {
+  folder
+  file
+}

@@ -1,12 +1,28 @@
 import { Elysia } from "elysia";
+import { apiV1 } from "./interfaces/http/routes";
+import { env } from "./config/env";
 
 export function createApp() {
-  return new Elysia().get("/", () => "Hello Elysia");
+  const app = new Elysia();
+  app.get("/health", () => ({
+    status: "ok",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+  }));
+  app.use(apiV1());
+  return app;
 }
 
 if (import.meta.main) {
-  const app = createApp().listen(3000);
+  const server = createApp().listen(env.PORT);
   console.log(
-    `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
+    `🦊 Elysia is running at ${server.server?.hostname}:${server.server?.port}`,
   );
+
+  const close = () => {
+    server.stop();
+    process.exit(0);
+  };
+  process.on("SIGINT", close);
+  process.on("SIGTERM", close);
 }

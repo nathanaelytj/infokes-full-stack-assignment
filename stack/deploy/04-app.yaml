@@ -1,5 +1,5 @@
 services:
-  infokes_fe:
+  frontend:
     image: oven/bun:latest
     working_dir: /app
     command:
@@ -14,24 +14,24 @@ services:
           memory: 500M
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.infokes_fe.entrypoints=web"
-        - "traefik.http.routers.infokes_fe.rule=Host(`infokes.docker.localhost`)"
-        - "traefik.http.services.infokes_fe.loadbalancer.server.port=3000"
+        - "traefik.http.routers.frontend.entrypoints=web"
+        - "traefik.http.routers.frontend.rule=Host(`infokes.docker.localhost`)"
+        - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     environment:
       - TZ=Asia/Jakarta
     networks:
       base-net:
         aliases:
-          - infokes_fe
+          - frontend
     volumes:
       - ../../frontend:/app
 
-  infokes_be:
+  backend:
     image: oven/bun:latest
     working_dir: /app
     command:
       [
-        "bun","dev","--host","0.0.0.0"
+        "bun","dev"
       ]
     deploy:
       replicas: 1
@@ -41,15 +41,15 @@ services:
           memory: 500M
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.infokes_be.entrypoints=web"
-        - "traefik.http.routers.infokes_be.rule=Host(`infokes-be.docker.localhost`)"
-        - "traefik.http.services.infokes_be.loadbalancer.server.port=3000"
+        - "traefik.http.routers.backend.entrypoints=web"
+        - "traefik.http.routers.backend.rule=Host(`backend.docker.localhost`)"
+        - "traefik.http.services.backend.loadbalancer.server.port=3000"
     environment:
       - TZ=Asia/Jakarta
     networks:
       base-net:
         aliases:
-          - infokes_be
+          - backend
     volumes:
       - ../../backend:/app
 
