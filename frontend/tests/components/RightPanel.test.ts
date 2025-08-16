@@ -27,22 +27,26 @@ const global = {
 
 describe("RightPanel", () => {
   it("shows empty state when no folder selected", () => {
-  render(RightPanel, { props: { selectedId: null }, global });
+    render(RightPanel, { props: { selectedId: null }, global });
     expect(screen.getByText(/select a folder/i)).toBeTruthy();
   });
 
   it("lists children for selected folder and emits open when clicking a folder", async () => {
     const onOpen = vi.fn();
-  render(RightPanel, { props: { selectedId: "1" }, global, attrs: { onOpen } });
+    render(RightPanel, {
+      props: { selectedId: "1" },
+      global,
+      attrs: { onOpen },
+    });
 
     // Should render entries for child-folder and doc.md
     expect(screen.getByText(/child-folder/i)).toBeTruthy();
     expect(screen.getByText(/doc.md/i)).toBeTruthy();
 
     // Click folder tile should emit open with its id (2)
-  const folderLabel = screen.getByText(/child-folder/i);
-  const folderTile = folderLabel.closest('[data-id="2"]') as HTMLElement;
+    const folderLabel = screen.getByText(/child-folder/i);
+    const folderTile = folderLabel.closest('[data-id="2"]') as HTMLElement;
     await fireEvent.click(folderTile);
-  expect(onOpen).toHaveBeenCalledWith("2");
+    expect(onOpen).toHaveBeenCalledWith("2");
   });
 });

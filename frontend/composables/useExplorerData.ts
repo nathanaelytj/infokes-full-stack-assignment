@@ -17,10 +17,11 @@ export interface ExplorerItem {
 const itemsRef = ref<ExplorerItem[]>([]);
 
 async function loadFromBackend() {
+  if (process.server) return; // avoid SSR fetch to prevent hydration mismatch
   const base = useBackendUrl();
   const { data, error } = await useFetch<{ data: ExplorerItem[] }>(
     `${base}/api/v1/items`,
-    { key: "items:list" },
+    { key: "items:list", server: false },
   );
   if (error.value) return;
   itemsRef.value = data.value?.data ?? [];

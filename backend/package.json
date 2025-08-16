@@ -25,7 +25,8 @@
     "elysia": "latest",
     "@prisma/client": "^6.14.0",
     "ioredis": "^5.4.2",
-    "zod": "^4.0.17"
+    "zod": "^4.0.17",
+    "@elysiajs/cors": "^1.0.4"
   },
   "devDependencies": {
     "@types/node": "^24.2.1",

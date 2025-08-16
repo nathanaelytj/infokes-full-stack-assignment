@@ -25,24 +25,24 @@ describe("useExplorerState", () => {
     const { selectedId, updateUI } = useExplorerState();
     expect(selectedId.value).toBeNull();
 
-  updateUI("1"); // folder
-  expect(selectedId.value).toBe("1");
+    updateUI("1"); // folder
+    expect(selectedId.value).toBe("1");
   });
 
   it("coerces file selection to its parent folder using updateUI", () => {
     const { selectedId, updateUI } = useExplorerState();
 
-  updateUI("3"); // file -> parent "2"
-  expect(selectedId.value).toBe("2");
+    updateUI("3"); // file -> parent "2"
+    expect(selectedId.value).toBe("2");
   });
 
   it("watches direct mutations and coerces file -> parent folder", async () => {
     const { selectedId } = useExplorerState();
 
     // simulate external set to a file id
-  selectedId.value = "3";
+    selectedId.value = "3";
     await nextTick();
 
-  expect(selectedId.value).toBe("2");
+    expect(selectedId.value).toBe("2");
   });
 });

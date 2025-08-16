@@ -44,7 +44,7 @@ describe("TreeItem", () => {
   it("renders folder icon and emits select on row click", async () => {
     const emitSelect = vi.fn();
     const { container } = render(TreeItem, {
-  props: { item: dataset[0] as any, selectedId: null },
+      props: { item: dataset[0] as any, selectedId: null },
       global,
       attrs: { onSelect: emitSelect },
     });
@@ -58,20 +58,20 @@ describe("TreeItem", () => {
     // Click the folder line -> emit select with its id
     const row = screen.getByText(/root/i).closest("div");
     await fireEvent.click(row!);
-  expect(emitSelect).toHaveBeenCalledWith("1");
+    expect(emitSelect).toHaveBeenCalledWith("1");
   });
 
   it("propagates select from child items", async () => {
     const emitSelect = vi.fn();
     render(TreeItem, {
-  props: { item: dataset[0] as any, selectedId: null },
+      props: { item: dataset[0] as any, selectedId: null },
       global: {
         stubs: {
           ...global.stubs,
           TreeItem: {
             props: ["item", "selectedId"],
             template:
-              '<li role="listitem"><button @click="$emit(\'select\', \"3\")">child</button></li>',
+              '<li role="listitem"><button @click="$emit(\'select\', \'3\')">child</button></li>',
           },
         },
       },
@@ -80,6 +80,6 @@ describe("TreeItem", () => {
 
     const btn = screen.getByRole("button", { name: /child/i });
     await fireEvent.click(btn);
-  expect(emitSelect).toHaveBeenCalledWith("3");
+    expect(emitSelect).toHaveBeenCalledWith("3");
   });
 });

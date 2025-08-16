@@ -46,6 +46,6 @@ describe("Tree", () => {
     await fireEvent.click(firstBtn);
 
     expect(onSelect).toHaveBeenCalledTimes(1);
-  expect(onSelect).toHaveBeenCalledWith("1");
+    expect(onSelect).toHaveBeenCalledWith("1");
   });
 });
