@@ -50,6 +50,7 @@ services:
       base-net:
         aliases:
           - backend
+          - backend.docker.localhost
     volumes:
       - ../../backend:/app
 

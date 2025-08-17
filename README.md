@@ -2,110 +2,72 @@
 
 ## Description
 
-This project is a web-based "Windows Explorer" application, built as a monorepo to separate the frontend and backend concerns. The application is split into two main panels: a left panel that displays a complete, tree-like folder structure, and a right panel that shows the direct subfolders and files of the currently selected folder.
-
-The application is built to be scalable and uses modern best practices, including a service and repository layer, caching, and a comprehensive testing suite.
+This project is a web-based "Windows Explorer" application. The left panel shows a tree of folders; the right panel shows the selected folder’s direct children. The backend uses Elysia with a clean service/repository layout; the frontend is a Nuxt 3 app. Tests cover units/integration (Vitest) and end-to-end (Cypress).
 
 ## Technologies
 
 ### Backend
-
-  * **Framework:** [Elysia](https://elysiajs.com/)
-  * **Runtime:** [Bun](https://bun.sh/)
-  * **Language:** [TypeScript](https://www.typescriptlang.org/)
-  * **Database:** [PostgreSQL](https://www.postgresql.org/)
-  * **Caching:** [Redis](https://redis.io/)
+- Framework: Elysia (Bun, TypeScript)
+- Database: PostgreSQL (via Prisma)
+- Cache: Redis
 
 ### Frontend
-
-  * **Framework:** [Nuxt 3](https://nuxt.com/)
-  * **UI Library:** [Tailwind CSS](https://tailwindcss.com/)
-  * **Language:** [TypeScript](https://www.typescriptlang.org/)
+- Framework: Nuxt 3 (Vue 3, TypeScript)
+- UI: Tailwind CSS and Nuxt UI
 
 ### Testing
+- Unit/Integration: Vitest
+- E2E: Cypress
 
-  * **Unit/Integration:** [Vitest](https://vitest.dev/)
-  * **E2E:** [Cypress](https://www.cypress.io/)
-
-### Monorepo Tooling
-
-  * **Package Manager:** [Bun](https://bun.sh/)
-
-## Project Structure
-
-The project is structured as a monorepo with two main applications: `frontend` and `backend`.
+## Repository layout
 
 ```
 /
-├── backend/                  # Elysia API for serving data
-│   ├── src/
-│   │   ├── services/         # Business logic layer
-│   │   ├── repositories/     # Data access layer
-│   │   └── index.ts          # Main Elysia app
-│   ├── .env.example
-│   └── package.json
-├── frontend/                 # Nuxt 3 application
+├── backend/                  # Elysia API
+│   ├── prisma/               # Prisma schema
+│   └── src/
+│       ├── application/      # Services + ports
+│       ├── domain/           # Entities
+│       ├── infra/            # DB/Redis/adapters
+│       ├── interfaces/       # HTTP routes
+│       └── index.ts          # App entry (default PORT=3000)
+├── frontend/                 # Nuxt 3 app
 │   ├── components/
-│   │   └── FolderTree.vue    # Manually built folder structure component
-│   ├── pages/
-│   ├── layouts/
-│   ├── nuxt.config.ts
-│   └── package.json
-├── .env.example
-├── bun.lockb
-└── package.json              # Root package.json
+│   │   └── explorer/         # Tree UI (Tree.vue, TreeItem.vue, RightPanel.vue)
+│   ├── pages/                # index.vue
+│   ├── composables/          # state, data, search
+│   └── nuxt.config.ts        # runtimeConfig.public.backendUrl
+├── e2e/                      # Cypress tests for the frontend
+├── stack/                    # Docker Swarm manifests and helpers
+└── README.md
 ```
 
-## Getting Started
+## Getting started (local development)
 
-### Prerequisites
+Prerequisites:
+- Bun installed
+- Optional: PostgreSQL and Redis (see stack/ or use your own instances)
 
-  * [Bun](https://bun.sh/) runtime installed.
-  * [Docker](https://www.docker.com/) for running PostgreSQL and Redis (recommended).
+Install dependencies (run per app):
+- Backend: `cd backend && bun install`
+- Frontend: `cd frontend && bun install`
+- E2E: `cd e2e && npm i`
 
-### 1\. Environment Setup
+Run backend (choose a port that doesn’t conflict with Nuxt dev):
+- Default backend port is 3000 (see `backend/src/config/env.ts`).
+- Recommended locally: run backend on 3001.
+  - Example: `PORT=3001 bun run dev` (from `backend/`).
 
-Create a `.env` file in the root of the project by copying the `.env.example` file.
+Run frontend and point it to your backend:
+- Frontend dev runs on 3000 by default.
+- Set `BACKEND_URL` so the app knows where to fetch API data.
+  - Example: `BACKEND_URL=http://localhost:3001 bun run dev` (from `frontend/`).
 
-```bash
-cp .env.example .env
-```
+Now open http://localhost:3000.
 
-Update the `.env` file with your database and Redis connection details.
-
-### 2\. Database and Caching
-
-Start the PostgreSQL and Redis containers using Docker Compose.
-
-```bash
-docker-compose up -d
-```
-
-### 3\. Install Dependencies
-
-Navigate to the project root and install all dependencies for both the frontend and backend workspaces.
-
-```bash
-bun install
-```
-
-### 4\. Running the Applications
-
-From the project root, you can run both applications concurrently.
-
-**Start the Backend API:**
-
-```bash
-bun dev:backend
-```
-
-**Start the Frontend App:**
-
-```bash
-bun dev:frontend
-```
-
-The frontend will be available at `http://localhost:3000` and the backend at `http://localhost:3001` (or as configured).
+Notes:
+- The frontend defaults `runtimeConfig.public.backendUrl` to `http://localhost:3000`. Override it when running the backend on a different port.
+- For containerized/dev-cluster runs, services often resolve as `http://frontend:3000` and `http://backend:3000` (see stack/).
 
 ## Deployment & Docker Swarm
 
@@ -155,23 +117,17 @@ Security & operational notes:
 
 ## Features
 
-  * **File Explorer Interface:** A two-panel interface to browse folder structures.
-  * **Folder Tree:** The folder structure is built from scratch with Vue 3 and the Composition API.
-  * **Scalable Backend:** Uses Elysia with a service and repository layer, and Redis caching for improved performance.
-  * **Testing:** Comprehensive testing suite with Vitest for unit/integration tests and Cypress for end-to-end tests.
+- Two-panel file explorer UI (no external tree lib)
+- Typed domain + services + repositories
+- Prisma + Postgres, optional Redis cache
+- Unit/integration tests (Vitest) and E2E tests (Cypress)
 
 ## Testing
 
-**Run All Tests:**
+Backend (from `backend/`):
+- `bun run test`
 
-```bash
-bun test
-```
+Frontend (from `frontend/`):
+- `bun run test`
 
-This command will run all Vitest unit and integration tests.
-
-**Run E2E Tests (Cypress):**
-
-```bash
-bun cypress
-```
+E2E (from `e2e/`): see `e2e/README.md` for container vs local tips
