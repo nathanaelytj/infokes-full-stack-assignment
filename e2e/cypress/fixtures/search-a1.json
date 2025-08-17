@@ -1,4 +1,4 @@
 {
-  "data": [{ "id": "a-1", "name": "A1", "type": "folder", "parentId": "root-a" }],
+  "data": [{ "id": "1a2b3c4d-5e6f-789a-bcde-f01234567890", "name": "Projects", "type": "folder", "parentId": "b0f4d3c1-e7a9-4b67-a0d3-3c9f2b1d5a67" }],
   "nextCursor": null
 }
