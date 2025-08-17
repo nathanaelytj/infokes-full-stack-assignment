@@ -6,8 +6,8 @@ export default [
   { ignores: ["node_modules/**", "cypress/screenshots/**", "cypress/videos/**", "**/*.d.ts"] },
   // JS files: use default parser (avoid TypeScript project service for mjs like eslint.config.mjs)
   {
-    files: ["**/*.{js,mjs}"]
-    ,languageOptions: {
+    files: ["**/*.{js,mjs}"],
+    languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
       globals: {

@@ -24,7 +24,9 @@ export function createApp() {
           // Allow any subdomain of localhost or docker.localhost
           return (
             hostname === "localhost" ||
-            hostname.endsWith(".localhost")
+            hostname.endsWith(".localhost") ||
+            hostname === "frontend" ||
+            hostname.endsWith(".frontend")
           );
         } catch {
           return false;

@@ -23,7 +23,6 @@ services:
       base-net:
         aliases:
           - frontend
-          - infokes.docker.localhost
     volumes:
       - ../../frontend:/app
 
@@ -51,7 +50,6 @@ services:
       base-net:
         aliases:
           - backend
-          - backend.docker.localhost
     volumes:
       - ../../backend:/app
 

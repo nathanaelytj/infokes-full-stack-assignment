@@ -9,10 +9,10 @@
 describe("Explorer interactions", () => {
   function stubBackend() {
     cy.fixture("items.json").then((items) => {
-      cy.intercept("GET", /\/api\/v1\/items(\?.*)?$/, items).as("getItems");
+      cy.intercept({ method: "GET", url: "**/api/v1/items*" }, items).as("getItems");
     });
 
-    cy.intercept("GET", /\/api\/v1\/items\/search.*/, (req) => {
+    cy.intercept({ method: "GET", url: "**/api/v1/items/search*" }, (req) => {
       const url = new URL(req.url);
       const q = url.searchParams.get("q") || "";
       if (q.toLowerCase().includes("a1")) {
@@ -24,41 +24,48 @@ describe("Explorer interactions", () => {
   }
 
   beforeEach(() => {
-    // Ensure frontend points to our baseUrl
-    // Nuxt reads BACKEND_URL from env; we proxy to same origin
+    // Ensure frontend points to backend service on a different host
+    // Nuxt reads BACKEND_URL from runtime config; point it to backend:3000
     stubBackend();
     cy.visit("/", {
       onBeforeLoad(win) {
-        // Override runtime config if exposed on window to keep same-origin
-        (win as any).__NUXT__ = (win as any).__NUXT__ || {};
+        // Force Nuxt runtime to use backend:3000 so intercepts work reliably
+        const w: any = win as any;
+        w.__NUXT__ = w.__NUXT__ || {};
+        w.__NUXT__.config = w.__NUXT__.config || { public: {} };
+        w.__NUXT__.config.public = {
+          ...(w.__NUXT__.config.public || {}),
+          backendUrl: "http://backend:3000",
+        };
       },
     });
-    cy.wait("@getItems");
+    cy.wait("@getItems", { timeout: 15000 });
   });
 
   it("opens folder from tree, searches, and collapses", () => {
     // Open Root A by clicking its chevron then item
     cy.contains("li[data-type=folder] div", "Root A").as("rootA");
 
-    // Chevron is the first icon; click it to expand
-    cy.get("@rootA").within(() => {
-      cy.get(".i-heroicons-chevron-right-20-solid").click({ force: true });
-    });
+    // Click the tree row to select and expand Root A
+    cy.get("@rootA").click();
 
     // Click on child A1 to select/open it (in tree selection updates right panel)
     cy.contains("li[data-type=folder] div", "A1").click();
 
     // Right panel should show contents for A1 (either empty or with doc)
-    cy.contains("Contents:");
-    cy.contains("A1");
+    cy.contains("h2", "Contents:").should("contain", "A1");
 
     // Search for A1 using search bar
-    cy.get('[data-testid="search-input"] input').type("A1");
+    cy.get('[data-testid="search-input"]').type("A1");
     cy.get("body").then(() => cy.wait(350)); // debounce wait
 
     // Should show Search Results section and include A1
-    cy.contains("Search Results");
-    cy.contains("A1").click(); // navigate to folder from results
+    cy.contains("h2", "Search Results");
+    cy.contains("h2", "Search Results")
+      .parent()
+      .within(() => {
+        cy.contains("A1").click(); // navigate to folder from results
+      });
 
     // After navigating from results, search results should hide
     cy.contains("Search Results").should("not.exist");
@@ -66,11 +73,10 @@ describe("Explorer interactions", () => {
     // Tree item A1 is selected; clicking it again collapses to its parent
     cy.contains("li[data-type=folder] div", "A1").click();
 
-    // Expect selection to move to Root A (parent) — check right panel header
-    cy.contains("Contents:")
-      .parent()
-      .within(() => {
-        cy.contains("Root A");
-      });
+    // Expect selection to move to Root A (parent)
+    // 1) Tree highlight moves to Root A
+    cy.get('li[data-id="root-a"] > div').should("have.class", "bg-gray-300");
+    // 2) Right panel header shows Root A
+    cy.contains("h2", "Contents:", { timeout: 10000 }).should("contain", "Root A");
   });
 });
