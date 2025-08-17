@@ -1,5 +1,8 @@
 import type { CreateItemDTO, Item, UpdateItemDTO } from "../../domain/item";
-import type { ItemSearchParams, ItemSearchResult } from "../ports/item-repository";
+import type {
+  ItemSearchParams,
+  ItemSearchResult,
+} from "../ports/item-repository";
 import type { IItemRepository } from "../ports/item-repository";
 
 export class ItemService {

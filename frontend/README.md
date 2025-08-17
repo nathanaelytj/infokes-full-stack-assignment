@@ -34,20 +34,20 @@ frontend/
 
 Prereqs: Bun, and the backend API running.
 
-1) Install deps
+1. Install deps
 
 ```
 bun install
 ```
 
-2) Configure runtime
+2. Configure runtime
 
 The app reads these envs (see `nuxt.config.ts`):
 
 - BACKEND_URL: defaults to http://localhost:3000; set to your backend (e.g. http://localhost:3001)
 - HMR_HOST, HMR_CLIENT_PORT: optional for dev behind proxies
 
-3) Run dev server
+3. Run dev server
 
 ```
 bun dev

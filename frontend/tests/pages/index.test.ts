@@ -51,7 +51,9 @@ vi.mock("~/composables/useExplorerData", () => {
     );
   }
   function hasFolderChildren(id: string) {
-    return hoisted.dataset.some((d) => d.parentId === id && d.type === "folder");
+    return hoisted.dataset.some(
+      (d) => d.parentId === id && d.type === "folder",
+    );
   }
   function pathToRoot(id: string | null | undefined) {
     const path: string[] = [];

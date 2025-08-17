@@ -7,16 +7,28 @@ export function createApp() {
   const app = new Elysia();
   app.use(
     cors({
-      origin: (requestOrigin) => {
+      origin: (requestOrigin: string | Request | undefined) => {
         // requestOrigin can be a string or a Request-like object depending on runtime
-        const originStr =
-          typeof requestOrigin === "string"
-            ? requestOrigin
-            : requestOrigin &&
-              typeof requestOrigin === "object" &&
-              "headers" in requestOrigin
-            ? (requestOrigin as any).headers?.get?.("origin") ?? (requestOrigin as any).url
-            : undefined;
+        let originStr: string | undefined;
+        if (typeof requestOrigin === "string") originStr = requestOrigin;
+        else if (
+          requestOrigin &&
+          typeof requestOrigin === "object" &&
+          "headers" in requestOrigin
+        ) {
+          const reqLike = requestOrigin as Request;
+          // try headers.get('origin') then fallback to url
+          try {
+            const hdrs = reqLike.headers as Headers;
+            if (typeof hdrs.get === "function") {
+              originStr = hdrs.get("origin") ?? undefined;
+            }
+          } catch {
+            // ignore
+          }
+          if (!originStr && typeof (reqLike as Request).url === "string")
+            originStr = (reqLike as Request).url;
+        } else originStr = undefined;
 
         if (!originStr) return false;
         try {
@@ -25,8 +37,9 @@ export function createApp() {
           return (
             hostname === "localhost" ||
             hostname.endsWith(".localhost") ||
-            hostname === "frontend" ||
-            hostname.endsWith(".frontend")
+            (hostname === "frontend" && new URL(originStr).port === "3000") ||
+            (hostname.endsWith(".frontend") &&
+              new URL(originStr).port === "3000")
           );
         } catch {
           return false;
