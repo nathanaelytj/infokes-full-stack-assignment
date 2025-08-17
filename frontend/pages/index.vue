@@ -75,6 +75,7 @@
 
 <script setup lang="ts">
 useHead({ title: "Windows Explorer" });
+import { reactive } from "vue";
 import ExplorerTree from "~/components/explorer/Tree.vue";
 import RightPanel from "~/components/explorer/RightPanel.vue";
 import SearchBar from "~/components/SearchBar.vue";

@@ -1,0 +1,6 @@
+# Cypress artifacts
+cypress/videos/
+cypress/screenshots/
+.htmlcov/
+node_modules/
+.env

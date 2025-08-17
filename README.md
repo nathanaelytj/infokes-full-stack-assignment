@@ -2,176 +2,101 @@
 
 ## Description
 
-This project is a web-based "Windows Explorer" application, built as a monorepo to separate the frontend and backend concerns. The application is split into two main panels: a left panel that displays a complete, tree-like folder structure, and a right panel that shows the direct subfolders and files of the currently selected folder.
+This repo implements a web-based "Windows Explorer" UI. The left panel shows a folder tree; the right panel shows a selected folder’s children. The backend is an Elysia API (TypeScript + Bun). The frontend is Nuxt 3 (Vue 3 + TypeScript). Tests include Vitest unit/integration tests and Cypress end-to-end tests.
 
-The application is built to be scalable and uses modern best practices, including a service and repository layer, caching, and a comprehensive testing suite.
+## Tech stack
 
-## Technologies
+- Backend: Elysia (Bun, TypeScript), PostgreSQL (Prisma), optional Redis cache
+- Frontend: Nuxt 3, Vue 3, TypeScript, Tailwind CSS
+- Tests: Vitest (unit/integration), Cypress (E2E)
 
-### Backend
-
-  * **Framework:** [Elysia](https://elysiajs.com/)
-  * **Runtime:** [Bun](https://bun.sh/)
-  * **Language:** [TypeScript](https://www.typescriptlang.org/)
-  * **Database:** [PostgreSQL](https://www.postgresql.org/)
-  * **Caching:** [Redis](https://redis.io/)
-
-### Frontend
-
-  * **Framework:** [Nuxt 3](https://nuxt.com/)
-  * **UI Library:** [Tailwind CSS](https://tailwindcss.com/)
-  * **Language:** [TypeScript](https://www.typescriptlang.org/)
-
-### Testing
-
-  * **Unit/Integration:** [Vitest](https://vitest.dev/)
-  * **E2E:** [Cypress](https://www.cypress.io/)
-
-### Monorepo Tooling
-
-  * **Package Manager:** [Bun](https://bun.sh/)
-
-## Project Structure
-
-The project is structured as a monorepo with two main applications: `frontend` and `backend`.
+## Repo layout (top-level)
 
 ```
-/
-├── backend/                  # Elysia API for serving data
-│   ├── src/
-│   │   ├── services/         # Business logic layer
-│   │   ├── repositories/     # Data access layer
-│   │   └── index.ts          # Main Elysia app
-│   ├── .env.example
-│   └── package.json
-├── frontend/                 # Nuxt 3 application
-│   ├── components/
-│   │   └── FolderTree.vue    # Manually built folder structure component
-│   ├── pages/
-│   ├── layouts/
-│   ├── nuxt.config.ts
-│   └── package.json
-├── .env.example
-├── bun.lockb
-└── package.json              # Root package.json
+backend/   # Elysia API + prisma/
+frontend/  # Nuxt 3 app
+e2e/       # Cypress tests for the frontend
+stack/     # Docker Swarm manifests and helper scripts
 ```
 
-## Getting Started
+## Quickstart — local development
 
-### Prerequisites
+Checklist:
 
-  * [Bun](https://bun.sh/) runtime installed.
-  * [Docker](https://www.docker.com/) for running PostgreSQL and Redis (recommended).
+- Install Bun (for backend/frontend) or use npm where noted
+- Optional: PostgreSQL and Redis if you want to run the full stack
 
-### 1\. Environment Setup
+Install dependencies (one command per folder):
 
-Create a `.env` file in the root of the project by copying the `.env.example` file.
+1. Backend:
 
-```bash
-cp .env.example .env
-```
+  cd backend
+  bun install
 
-Update the `.env` file with your database and Redis connection details.
+2. Frontend:
 
-### 2\. Database and Caching
+  cd ../frontend
+  bun install
 
-Start the PostgreSQL and Redis containers using Docker Compose.
+3. E2E (Cypress toolchain):
 
-```bash
-docker-compose up -d
-```
+  cd ../e2e
+  npm install
 
-### 3\. Install Dependencies
+Run services (recommended ports):
 
-Navigate to the project root and install all dependencies for both the frontend and backend workspaces.
+- Backend (recommended port to avoid conflict with frontend dev):
 
-```bash
-bun install
-```
+  cd backend
+  PORT=3001 bun run dev
 
-### 4\. Running the Applications
+- Frontend (Nuxt dev — configured for port 3000):
 
-From the project root, you can run both applications concurrently.
+  cd frontend
+  BACKEND_URL=http://localhost:3001 bun run dev
 
-**Start the Backend API:**
+Open http://localhost:3000 in your browser.
 
-```bash
-bun dev:backend
-```
+Notes:
 
-**Start the Frontend App:**
-
-```bash
-bun dev:frontend
-```
-
-The frontend will be available at `http://localhost:3000` and the backend at `http://localhost:3001` (or as configured).
+- The frontend defaults `runtimeConfig.public.backendUrl` to `http://localhost:3000` — set `BACKEND_URL` when running the backend on a different port.
+- For containerized runs the service hostnames are typically `http://frontend:3000` and `http://backend:3000` (see `stack/`).
 
 ## Deployment & Docker Swarm
 
-This repository includes helper scripts and stack manifests for deploying the full system to a Docker Swarm or using Docker Compose. The two main helper scripts live in the `stack/` folder:
+This repo includes helper scripts and stack manifests in `stack/` for Docker Swarm or `docker compose` deployments. The scripts assume a Linux host and require `sudo` for system-level changes (installing Docker, copying `daemon.json`, restarting the daemon). See `stack/` for details.
 
-- `stack/docker-swarm-init.sh` — prepares the host for Docker and Swarm usage. Key behaviors:
-  - Installs Docker (on Debian/Ubuntu) if the `docker` CLI is not present (uses `sudo`).
-  - If a `stack/daemon.json` exists in the repository, it will copy it to `/etc/docker/daemon.json` (requires `sudo`) when different or missing.
-  - Restarts the Docker daemon and waits for it to become available.
-  - Initializes a Docker Swarm (runs `docker swarm init --advertise-addr 127.0.0.1`).
-  - Creates two networks used by the stack manifests:
-    - `docker_gwbridge` with subnet `10.174.0.0/24` and a custom bridge name (used for routing).
-    - `base-net` an attachable overlay network (IPv6 enabled) for swarm services.
+Quick run (from repo root):
 
-- `stack/auto-deploy.sh` — discovers YAML/stack files in `stack/deploy/` and deploys them sequentially. Key behaviors:
-  - Changes working directory to `stack/` so relative paths in compose files resolve correctly.
-  - Exports `COMPOSE_PROJECT_DIR` so docker-compose resolves relative paths from the `stack` folder.
-  - Finds files in `stack/deploy/` in this order: `*.stack.yml`, `*.yml`, `*.yaml` (sorted by name) and deploys each file.
-  - Prefers `docker stack deploy --with-registry-auth -c <file> <stack_name>` when the Docker CLI supports `stack` (stack name inferred from filename).
-  - Falls back to `docker compose -f <file> up -d` when `docker stack` is not available.
+1. Make scripts executable if needed:
 
-Usage notes and prerequisites:
+  chmod +x stack/docker-swarm-init.sh stack/auto-deploy.sh
 
-- Both scripts assume a Linux host (the scripts use `apt` and `systemctl` where appropriate). `sudo` is required for system-level changes (installing Docker, copying `daemon.json`, restarting the daemon).
-- `stack/docker-swarm-init.sh` is idempotent for many operations (it will skip installing Docker if present and only copy `daemon.json` when it differs).
-- `stack/auto-deploy.sh` will fail early if no files exist in `stack/deploy/` or if the `docker` CLI is not available.
+2. Prepare the host and initialize Docker Swarm (requires sudo):
 
-Quick run commands (from repository root):
+  cd stack && sudo ./docker-swarm-init.sh
 
-```bash
-# Make scripts executable if needed
-chmod +x stack/docker-swarm-init.sh stack/auto-deploy.sh
+3. Deploy stacks / compose files found under `stack/deploy/`:
 
-# Prepare the host and initialize Docker Swarm (requires sudo for installs/copies)
-cd stack && sudo ./docker-swarm-init.sh
+  ./auto-deploy.sh
 
-# Deploy stacks / compose files found under stack/deploy/
-./auto-deploy.sh
-```
-
-If you prefer to use `docker compose` manually rather than the stack deploy flow, run `docker compose -f stack/deploy/<file> up -d` from the `stack/` directory so relative paths in the compose files (for volumes and `./config/traefik`) resolve correctly.
-
-Security & operational notes:
-
-- The `docker-swarm-init` script copies `stack/daemon.json` to `/etc/docker/daemon.json` when present. Review that file before running to ensure your daemon config is appropriate for the host.
-- The scripts are best run on a single machine intended to act as a Swarm manager. The `docker swarm init` call advertises `127.0.0.1` by default; you may want to customize the advertise address for multi-host clusters.
+If you prefer `docker compose` manually, run it from the `stack/` directory so relative paths resolve correctly.
 
 ## Features
 
-  * **File Explorer Interface:** A two-panel interface to browse folder structures.
-  * **Folder Tree:** The folder structure is built from scratch with Vue 3 and the Composition API.
-  * **Scalable Backend:** Uses Elysia with a service and repository layer, and Redis caching for improved performance.
-  * **Testing:** Comprehensive testing suite with Vitest for unit/integration tests and Cypress for end-to-end tests.
+- Two-panel file explorer UI (no external tree lib)
+- Typed domain, services and repositories
+- Prisma + Postgres, optional Redis cache
+- Unit/integration tests (Vitest) and E2E tests (Cypress)
 
 ## Testing
 
-**Run All Tests:**
+- Backend (from `backend/`):
 
-```bash
-bun test
-```
+  bun run test
 
-This command will run all Vitest unit and integration tests.
+- Frontend (from `frontend/`):
 
-**Run E2E Tests (Cypress):**
+  bun run test
 
-```bash
-bun cypress
-```
+- E2E (from `e2e/`): see `e2e/README.md` for container vs local tips

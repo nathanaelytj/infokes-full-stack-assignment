@@ -79,7 +79,7 @@ export function apiV1() {
         limit: t.Optional(t.String()),
         cursor: t.Optional(t.String({ format: "uuid" })),
         parentId: t.Optional(t.Union([t.String({ format: "uuid" }), t.Null()])),
-        type: t.Optional(t.Union([t.Literal("folder"), t.Literal("file")]))
+        type: t.Optional(t.Union([t.Literal("folder"), t.Literal("file")])),
       }),
     },
   );

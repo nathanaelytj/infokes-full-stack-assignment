@@ -2,7 +2,10 @@ import type { IItemRepository } from "../../application/ports/item-repository";
 import type { CreateItemDTO, Item, UpdateItemDTO } from "../../domain/item";
 import { prisma } from "../db/prisma";
 import { cached, invalidate } from "../cache/redis";
-import type { ItemSearchParams, ItemSearchResult } from "../../application/ports/item-repository";
+import type {
+  ItemSearchParams,
+  ItemSearchResult,
+} from "../../application/ports/item-repository";
 
 const CACHE_KEYS = {
   tree: "items:tree",
@@ -80,8 +83,12 @@ export class PrismaItemRepository implements IItemRepository {
     return cached(key, 15, async () => {
       const where = {
         AND: [
-          params.q ? { name: { contains: params.q, mode: "insensitive" } } : undefined,
-          params.parentId !== undefined ? { parentId: params.parentId } : undefined,
+          params.q
+            ? { name: { contains: params.q, mode: "insensitive" } }
+            : undefined,
+          params.parentId !== undefined
+            ? { parentId: params.parentId }
+            : undefined,
           params.type ? { type: params.type } : undefined,
         ].filter(Boolean) as object[],
       };
