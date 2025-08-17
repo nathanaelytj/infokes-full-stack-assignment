@@ -6,7 +6,7 @@
 // - Searching a folder and navigating to it
 // - Collapsing the tree back to parent when clicking an already-selected folder
 
-describe("Explorer interactions", () => {
+describe("Explorer interactions (with backend stubs)", () => {
   function stubBackend() {
     cy.fixture("items.json").then((items) => {
       cy.intercept({ method: "GET", url: "**/api/v1/items*" }, items).as("getItems");
